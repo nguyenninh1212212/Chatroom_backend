@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import app.dto.room.RoomDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
@@ -75,24 +76,33 @@ public class RoomService {
 	}
 	
 	public List<RoomInfoDTO> Rooms(UUID user_id) {
-	    User user = userRep.findById(user_id)
-	            .orElseThrow(() -> new ResourceNotFoundException("User is not existing!!"));
+
 	    try {
-	        List<Room> rooms = roomRep.findAllByUserId(user.getId());
-	        
-	        List<RoomInfoDTO> roomList = rooms.stream().map(room -> {
+			User user = userRep.findById(user_id)
+					.orElseThrow(() -> new ResourceNotFoundException("User is not existing!!"));
+	        List<RoomInfoDTO> roomList = roomRep.findAllByUserId(user.getId()).stream().map(room -> {
 	            Optional<MesssageLatestDTO> messagelatest = messageSer.getLatestMessages(room.getId());
 	            String content=messagelatest.map(MesssageLatestDTO::getContent).orElse("no message yet");
 	            return new RoomInfoDTO(room, content);
 	        }).collect(Collectors.toList());
-	        
 	        return roomList;
 	    } catch (Exception e) {
 	        throw new RuntimeException(e.getMessage());
 	    }
 	}
 
-	
+	public Optional<RoomDetailDTO> TheRooms( UUID room_id,UUID user_id) {
+		try {
+
+			return roomRep.findRoomById(room_id)
+					.map(room -> new RoomDetailDTO(room,user_id));
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+
+
 	public Room JoinRoom(UUID user_id, UUID id) {
 	    Room room = roomRep.findById(id)
 	                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!"));
@@ -117,7 +127,16 @@ public class RoomService {
 	    return room;
 	}
 
-
+	public List<RoomInfoDTO> searchRooms(String keyword){
+		try{
+			List<RoomInfoDTO> roomList = roomRep.searchRooms(keyword).stream().map(room -> {
+				return new RoomInfoDTO(room, "");
+			}).collect(Collectors.toList());
+			return roomList;
+		}catch(Exception e){
+			throw new RuntimeException(e.getMessage());
+		}
+	}
 
 
 }

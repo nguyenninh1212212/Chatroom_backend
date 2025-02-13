@@ -2,20 +2,20 @@ package app.dto.member;
 
 import java.util.UUID;
 
+import app.dto.user.UserFEDTO;
 import app.dto.user.UserInfoDTO;
+import app.entity.Member;
 import app.entity.User;
 
 public class MemberInfoDTO {
 	private UUID id;
-	private UserInfoDTO userInfo;
-	static int count=0;
-	public MemberInfoDTO() {
-		count++;
-	}
-	public MemberInfoDTO(UUID id,User user) {
-		// TODO Auto-generated constructor stub
-		this.id=id;
-		this.userInfo=new UserInfoDTO(user);
+	private UserFEDTO userFEDTO;
+
+
+
+	public MemberInfoDTO(Member member) {
+		this.id = member.getId();
+		this.userFEDTO = new UserFEDTO(member.getUser());
 	}
 	public UUID getId() {
 		return id;
@@ -23,14 +23,11 @@ public class MemberInfoDTO {
 	public void setId(UUID id) {
 		this.id = id;
 	}
-	public UserInfoDTO getUserInfo() {
-		return userInfo;
+	public UserFEDTO getUserInfo() {
+		return userFEDTO;
 	}
-	public void setUserInfo(UserInfoDTO userInfo) {
-		this.userInfo = userInfo;
+	public void setUserInfo(UserFEDTO userFEDTO) {
+		this.userFEDTO = userFEDTO	;
 	}
 	
-	public static void displayCount() {
-        System.out.println("Count: " + count);  
-    }
 }

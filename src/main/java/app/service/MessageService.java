@@ -35,26 +35,25 @@ public class MessageService {
 		message=messageRep.save(message);
 		return new ReqMessageDTO(message.getId(),message.getContent(),message.getUser(),message.getRoom());
 	}
-	
-	public List<MessagesDTO> messages(UUID room_id, UUID user_id) {
-	    	try {
-	    		 	Room room = roomRep.findById(room_id)
-	    	                .orElseThrow(() -> new RuntimeException("This room is not existing"));
-	    	        User user = userRep.findById(user_id)
-	    	                .orElseThrow(() -> new RuntimeException("This User is not existing"));
-	    	        List<Message> mess = messageRep.findAllByRoomId(room.getId());
-	    	        List<MessagesDTO> messList = mess.stream().map(e -> {
-	    	            Boolean isMine = e.getUser().getId().equals(user.getId());
-	    	            return new MessagesDTO(e.getContent(), e.getUser(), e.getCreated(), isMine);
-	    	        }).collect(Collectors.toList());
 
-	    	        return messList;
-				
-			} catch (Exception e) {
-				throw new RuntimeException(e.getMessage());
-			}
-	}	
-	
+	public List<Message> messages(UUID room_id, UUID user_id) {
+		try {
+			Room room = roomRep.findById(room_id)
+					.orElseThrow(() -> new RuntimeException("This room is not existing"));
+			User user = userRep.findById(user_id)
+					.orElseThrow(() -> new RuntimeException("This User is not existing"));
+
+			List<Message> mess = messageRep.findAllByRoomId(room.getId());
+
+
+
+			return mess;
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+
 	public Optional<MesssageLatestDTO> getLatestMessages(UUID room_id) {
         return messageRep.findLatestMessageByRoomId(room_id).map(e->new MesssageLatestDTO(e));
         

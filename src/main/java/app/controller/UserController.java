@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +45,6 @@ public class UserController {
 
     @PostMapping("/register")
     ResponseEntity<?> register(@RequestBody UserDTO req) {
-        try {
      
             UserInfoDTO user = userSer.Register(req);
             return ResponseEntity.ok(Map.of(
@@ -50,30 +52,23 @@ public class UserController {
                     "data", user
             ));
 			
-		} catch (Exception e) {
-			ErrorResponseDTO errorResponse = new ErrorResponseDTO(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    e.getMessage()
-             );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-		}
+		
     }
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthDTO req, HttpServletResponse response) {
     	try {
-    		 
     		Authentication aut= authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
             if(aut.isAuthenticated()){
             	String accessToken = jwtSer.generateAccessToken(req.getUsername());
             	String refreshToken = jwtSer.generateRefreshToken(req.getUsername());
             	Map<String, String> tokens = new HashMap<>();
-                tokens.put("accessToken", accessToken);
+                tokens.put("token", accessToken);
                 tokens.put("refreshToken", refreshToken);
-                Cookie cookie = new Cookie("refreshToken", refreshToken);
-                cookie.setHttpOnly(true);
-                cookie.setSecure(true);// Chỉ hoạt động trên HTTPS
+                Cookie cookie = new Cookie("token", accessToken);
+                cookie.setHttpOnly(false);
                 cookie.setPath("/");
+                cookie.setSecure(false);
                 cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
                 response.addCookie(cookie);
             	 return ResponseEntity.ok(Map.of("message",tokens ));
@@ -101,5 +96,13 @@ public class UserController {
         return ResponseEntity.ok(tokens);
     }
     
+//    @GetMapping("/token")
+//    public ResponseEntity<?> getToken(@CookieValue(name = "Token", required = false) String token) {
+//        if (token == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token found");
+//        }
+//        return ResponseEntity.ok(Map.of("Token", token));
+//    }
+//
     
 }

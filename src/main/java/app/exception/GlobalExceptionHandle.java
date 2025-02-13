@@ -4,23 +4,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import app.dto.ErrorResponse.ErrorResponseDTO;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandle {
 
     // Xử lý lỗi mật khẩu không hợp lệ
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException exception) {
+    public ResponseEntity<?> handleInvalidPasswordException(InvalidPasswordException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 
     // Xử lý lỗi khi user đã tồn tại
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
+        ErrorResponseDTO error = new ErrorResponseDTO(HttpStatus.CONFLICT.value(), exception.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT); 
     }
+
 
     // Xử lý lỗi khi resource không tìm thấy
     @ExceptionHandler(ResourceNotFoundException.class)

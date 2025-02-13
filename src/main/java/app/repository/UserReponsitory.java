@@ -10,6 +10,6 @@ import app.entity.User;
 @Repository
 public interface UserReponsitory extends JpaRepository<User, UUID> {
 	Optional<User> findById(UUID id);
-	Optional<User> findByUsernameAndEmail(String username, String Email);
+	Optional<User> findByUsernameOrEmail(String username, String Email);
 	Optional<User> findByUsername(String username);
 }

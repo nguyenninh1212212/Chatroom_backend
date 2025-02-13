@@ -43,24 +43,28 @@ public class MessageController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> messages(@RequestParam(required = true) UUID user_id ,@RequestParam(required = true) UUID room_id) {
+    public ResponseEntity<?> messages(@RequestParam(required = true) UUID user_id,
+                                      @RequestParam(required = true) UUID room_id) {
         try {
-        	List<MessagesDTO> messages = messageSer.messages(room_id, user_id)
-        		    .stream()
-        		    .sorted(Comparator.comparing(MessagesDTO::getCreated).reversed())
-        		    .collect(Collectors.toList());
+            List<MessagesDTO> messages = messageSer.messages(room_id, user_id)
+                    .stream()
+                    .map(message -> new MessagesDTO(message, user_id)) // Chuyển đổi sang DTO
+                    .sorted(Comparator.comparing(MessagesDTO::getCreated)) // Sắp xếp theo ID hoặc thời gian
+                    .collect(Collectors.toList());
+
             return ResponseEntity.ok(Map.of("message", "Successfully !!🎈", "data", messages));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid UUID format");
         } catch (Exception e) {
-        	ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+            ErrorResponseDTO errorResponse = new ErrorResponseDTO(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     e.getMessage()
-                );
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-    
+
+
     @GetMapping("/latest")
     public ResponseEntity<Optional<MesssageLatestDTO>> getLatestMessages(@RequestParam(required = true) UUID room_id) {
         Optional<MesssageLatestDTO> messages = messageSer.getLatestMessages(room_id);

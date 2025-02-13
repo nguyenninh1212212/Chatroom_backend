@@ -1,29 +1,31 @@
 package app.dto.message;
 
+import app.entity.Message;
+
 import java.time.LocalDateTime;
-import app.dto.user.UserInfoDTO;
-import app.entity.User;
+import java.util.UUID;
 
 public class MessagesDTO {
-
     private String content;
-    private UserInfoDTO user;
     private LocalDateTime created;
     private boolean isMine;
 
-    // Constructor
-    public MessagesDTO(String content, User user, LocalDateTime created, Boolean isMine) {
-        this.content = content;
-        this.user = new UserInfoDTO(user);
-        this.created = created;
-        this.isMine = isMine;
+    public MessagesDTO(Message message, UUID currentUserId) {
+        this.content = message.getContent();
+        this.created=message.getCreated();
+        this.isMine = message.getUser().getId().equals(currentUserId);
     }
 
-    // Constructor mặc định
-    public MessagesDTO() {
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    // Getters và Setters
+    public void setCreated(LocalDateTime time) {
+        this.created = time;
+    }
+
+
+
     public String getContent() {
         return content;
     }
@@ -32,59 +34,11 @@ public class MessagesDTO {
         this.content = content;
     }
 
-    public UserInfoDTO getUser() {
-        return user;
-    }
-
-    public void setUser(UserInfoDTO user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
     public boolean isMine() {
         return isMine;
     }
 
-    public void setMine(boolean isMine) {
-        this.isMine = isMine;
+    public void setMine(boolean mine) {
+        isMine = mine;
     }
-
-//    // Builder Pattern
-//    public static class Builder {
-//        private String content;
-//        private User user;
-//        private LocalDateTime created;
-//        private boolean isMine;
-//
-//        public Builder setContent(String content) {
-//            this.content = content;
-//            return this;
-//        }
-//
-//        public Builder setUser(User user) {
-//            this.user = user;
-//            return this;
-//        }
-//
-//        public Builder setCreated(LocalDateTime created) {
-//            this.created = created;
-//            return this;
-//        }
-//
-//        public Builder setIsMine(boolean isMine) {
-//            this.isMine = isMine;
-//            return this;
-//        }
-//
-//        public MessagesDTO build() {
-//            return new MessagesDTO(content, user , created, isMine);
-//        }
-//    }
 }

@@ -1,8 +1,7 @@
-package app.exception;
-
-@SuppressWarnings("serial")
-public class UserAlreadyExistsException extends RuntimeException {
-    public UserAlreadyExistsException(String message) {
-        super(message);
-    }
-}
+	package app.exception;
+	
+	public class UserAlreadyExistsException extends RuntimeException {
+	    public UserAlreadyExistsException(String message) {
+	        super(message);
+	    }
+	}

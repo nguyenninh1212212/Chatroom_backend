@@ -1,5 +1,7 @@
 package app.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,26 @@ public class UserService implements UserDetailsService {
 
  	
     public UserInfoDTO Register(UserDTO req) {
-    	Optional<User> existingUser = userRep.findByUsernameAndEmail(req.getUsername(),req.getEmail());
-    	if(existingUser.isPresent()) {
-    		throw new UserAlreadyExistsException("Username or Email already exists!");
-    	}
-    	String passwordHash=passwordEncoder.encode(req.getPassword());
-    	User user =new User(req.getUsername(),passwordHash,req.getFullname(),req.getEmail());
-    	user = userRep.save(user);
-    	 return new UserInfoDTO(user);
-    } 
+        if (userRep.findByUsernameOrEmail(req.getUsername(), req.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("Username or Email already exists!");
+        }
+
+        List<String> errors = new ArrayList<>();
+        if (req.getUsername().length() < 6) errors.add("Username must be at least 6 characters.");
+        if (req.getPassword().length() < 6) errors.add("Password must be at least 6 characters.");
+
+        if (!errors.isEmpty()) {
+            throw new RuntimeException(String.join(" ", errors));
+        }
+
+        String passwordHash = passwordEncoder.encode(req.getPassword());
+        User user = new User(req.getUsername(), passwordHash, req.getFullname(), req.getEmail());
+        user = userRep.save(user);
+
+        return new UserInfoDTO(user);
+    }
+
+
     
     
     

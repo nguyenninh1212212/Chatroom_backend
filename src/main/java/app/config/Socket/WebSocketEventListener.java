@@ -10,7 +10,7 @@ import app.repository.MessageReponsitory;
 
 @Component
 public class WebSocketEventListener {
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class); // Fix lỗi Logger
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
     private final MessageReponsitory myRepository;
 
