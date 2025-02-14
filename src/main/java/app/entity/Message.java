@@ -35,12 +35,11 @@ public class Message {
 	@JoinColumn(name = "room_id", nullable = false)
 	private Room room;
 
-	@Column(nullable = false, updatable = false)
+	@Column( nullable = true)
 	private LocalDateTime created = LocalDateTime.now();
 
 	@LastModifiedDate
 	private LocalDateTime updated;
 
-	@Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-	private Boolean isSeen = false;
+
 }

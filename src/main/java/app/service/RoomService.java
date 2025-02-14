@@ -37,13 +37,15 @@ public class RoomService {
 	private MemberReponsitory memberRep;
 	@Autowired
 	private MessageService messageSer;
+	@Autowired
+	private ValidationService validationService;
 	@Async
 	public CompletableFuture<Room> createRoom(String name, UUID user_id) {
 	    if (name.isEmpty()) {
 	        throw new RuntimeException("Room name is not empty!!");
 	    }
-	    User owner = userRep.findById(user_id)
-	            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + user_id));
+	    User owner = userRep.findById(user_id).orElseThrow();
+
 
 	    Room room = new Room();
 	    room.setOwner(owner);
@@ -55,8 +57,8 @@ public class RoomService {
 
 	@Async
 	public CompletableFuture<Member> addMemberToRoom(Room room, UUID user_id) {
-	    User owner = userRep.findById(user_id)
-	            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + user_id));
+	    User owner = userRep.findById(user_id).orElseThrow();
+
 
 	    Member member = new Member();
 	    member.setRoom(room);
@@ -78,8 +80,7 @@ public class RoomService {
 	public List<RoomInfoDTO> Rooms(UUID user_id) {
 
 	    try {
-			User user = userRep.findById(user_id)
-					.orElseThrow(() -> new ResourceNotFoundException("User is not existing!!"));
+			User user = userRep.findById(user_id).orElseThrow();
 	        List<RoomInfoDTO> roomList = roomRep.findAllByUserId(user.getId()).stream().map(room -> {
 	            Optional<MesssageLatestDTO> messagelatest = messageSer.getLatestMessages(room.getId());
 	            String content=messagelatest.map(MesssageLatestDTO::getContent).orElse("no message yet");
@@ -94,8 +95,7 @@ public class RoomService {
 	public Optional<RoomDetailDTO> TheRooms( UUID room_id,UUID user_id) {
 		try {
 
-			return roomRep.findRoomById(room_id)
-					.map(room -> new RoomDetailDTO(room,user_id));
+			return roomRep.findById(room_id).stream().map(e->{return new RoomDetailDTO(e,user_id);}).findFirst();
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -107,8 +107,7 @@ public class RoomService {
 	    Room room = roomRep.findById(id)
 	                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!"));
 
-	    User user = userRep.findById(user_id)
-	                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+	    User user = validationService.validateUserId(user_id);
 
 	    boolean isMember = memberRep.findByUserIdAndRoomId(user.getId(), id).isPresent();
 	    if (isMember) {
@@ -137,6 +136,8 @@ public class RoomService {
 			throw new RuntimeException(e.getMessage());
 		}
 	}
+
+
 
 
 }

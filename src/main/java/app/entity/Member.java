@@ -34,6 +34,6 @@ public class Member {
     @Column(name = "add_by", nullable = false)
     private UUID addBy;
 
-    @Column(nullable = false, updatable = false)
+
     private LocalDateTime created = LocalDateTime.now();
 }

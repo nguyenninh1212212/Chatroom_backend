@@ -41,7 +41,7 @@ public class Room {
 	@JsonBackReference
 	private User owner;
 
-	@Column(nullable = false, updatable = false)
+	@Column( updatable = false)
 	private LocalDateTime created = LocalDateTime.now();
 
 	@LastModifiedDate

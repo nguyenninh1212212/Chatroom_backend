@@ -14,10 +14,16 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
+
     }
-    
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-chat").setAllowedOrigins("*").withSockJS().setClientLibraryUrl("http://localhost:2185");
+        registry.addEndpoint("/ws-chat")
+                .setAllowedOrigins("http://localhost:2185") // Chỉnh lại cho đúng frontend
+                .withSockJS();
     }
+
+
+
 }

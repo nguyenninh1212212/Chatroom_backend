@@ -1,7 +1,12 @@
 package app.controller;
 
+import java.util.List;
 import java.util.UUID;
 
+import app.dto.room.RoomInfoDTO;
+import app.entity.Message;
+import app.service.RoomService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,21 +20,38 @@ import app.service.MessageService;
 
 @Controller
 public class ChatMessageCotroller {
-	private final SimpMessagingTemplate simpMes ;
-	private final MessageService messSer;
-	public ChatMessageCotroller(SimpMessagingTemplate messagingTemplate, MessageService messageService) {
-        this.simpMes = messagingTemplate;
-        this.messSer = messageService;
+	private final SimpMessagingTemplate messagingTemplate;
+@Autowired
+private MessageService messageSer;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private RoomService roomService;
+
+    public ChatMessageCotroller(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
     }
 
+    @MessageMapping("/room/{room_id}")
+    public void sendMessage(@DestinationVariable String room_id, @Payload ChatMessageDTO chatMessageDTO) {
+        if (room_id == null || room_id.isEmpty()) {
+            throw new IllegalArgumentException("roomId must not be null or empty");
+        }
+
+        try {
+            UUID roomUUID = UUID.fromString(room_id);
+
+            // 1. Gửi tin nhắn đến phòng cụ thể
+            messagingTemplate.convertAndSend("/topic/room/" + room_id, chatMessageDTO);
+
+            // 2. Lưu tin nhắn vào database
+            messageService.create(chatMessageDTO, roomUUID);
 
 
-	 @MessageMapping("/room/{room_id}")
-	 @SendTo("/topic/public")
-	    public void sendMessage(@DestinationVariable UUID room_id,@Payload ChatMessageDTO message) {
-	        ReqMessageDTO savedMessage = messSer.create(message, room_id);
-	        simpMes.convertAndSend("/room/" + room_id, savedMessage);
-	    }
-
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid UUID format: " + room_id);
+            throw new IllegalArgumentException("Invalid room ID format", e);
+        }
+    }
 
 }

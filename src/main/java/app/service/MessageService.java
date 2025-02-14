@@ -1,11 +1,13 @@
 package app.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import app.dto.message.ChatMessageDTO;
@@ -27,11 +29,14 @@ public class MessageService {
 	private UserReponsitory userRep;
 	@Autowired
 	private RoomReponsitory roomRep;
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
+
 	public ReqMessageDTO create(ChatMessageDTO messageSend,UUID room_id){
 		User user=userRep.findById(messageSend.getUser_id()).orElseThrow(()-> new RuntimeException("This user is not existing"));
 		Room room=roomRep.findById(room_id).orElseThrow(()-> new RuntimeException("This room is not existing"));
 		
-		Message message=Message.builder().content(messageSend.getContent()).user(user).room(room).build();
+		Message message=Message.builder().content(messageSend.getContent()).user(user).room(room).created(LocalDateTime.now()).build();
 		message=messageRep.save(message);
 		return new ReqMessageDTO(message.getId(),message.getContent(),message.getUser(),message.getRoom());
 	}
@@ -69,5 +74,5 @@ public class MessageService {
         
     }
 
-	
+
 }

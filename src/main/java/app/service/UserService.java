@@ -1,5 +1,6 @@
 package app.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class UserService implements UserDetailsService {
         }
 
         String passwordHash = passwordEncoder.encode(req.getPassword());
-        User user =  User.builder().username(req.getUsername()).email(req.getEmail()).password(passwordHash).build();
+        User user =  User.builder().username(req.getUsername()).email(req.getEmail()).password(passwordHash).created(LocalDateTime.now()).build();
         user = userRep.save(user);
 
         return new UserInfoDTO(user);

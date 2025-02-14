@@ -1,5 +1,6 @@
 package app.controller;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class MessageController {
             UUID userId = UUID.fromString(req.get("user_id"));
             UUID roomId = UUID.fromString(req.get("room_id"));
             String content = req.get("content");
-            ChatMessageDTO messageSend=new ChatMessageDTO(userId,content);
+            ChatMessageDTO messageSend=new ChatMessageDTO(userId,roomId,content);
             ReqMessageDTO message = messageSer.create(messageSend, roomId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Successfully !!🎈", "data", message));
         } catch (IllegalArgumentException e) {

@@ -67,34 +67,41 @@ public class UserController {
 
 
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthDTO req, HttpServletResponse response) {
-    	try {
-    		Authentication aut= authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
-            if(aut.isAuthenticated()){
-            	String accessToken = jwtSer.generateAccessToken(req.getUsername());
-            	String refreshToken = jwtSer.generateRefreshToken(req.getUsername());
-            	Map<String, String> tokens = new HashMap<>();
-                tokens.put("token", accessToken);
-                tokens.put("refreshToken", refreshToken);
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
+            );
+
+            if (auth.isAuthenticated()) {
+                String accessToken = jwtSer.generateAccessToken(req.getUsername());
+                String refreshToken = jwtSer.generateRefreshToken(req.getUsername());
+
+                // Đặt cookie chứa token
                 Cookie cookie = new Cookie("token", accessToken);
-                cookie.setHttpOnly(false);
-                cookie.setDomain(".example.com");
-                cookie.setPath("/");
-                cookie.setHttpOnly(true);
-                cookie.setSecure(false);
-                cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+                cookie.setHttpOnly(false);  // Bảo vệ chống XSS
+                cookie.setSecure(false);    // Chỉ gửi qua HTTPS
+                cookie.setPath("/");       // Có hiệu lực trên toàn bộ website
+                cookie.setMaxAge(7 * 24 * 60 * 60); // Hết hạn sau 7 ngày
                 response.addCookie(cookie);
-            	 return ResponseEntity.ok(Map.of("message",tokens ));
+
+                // Trả về token
+                return ResponseEntity.ok(Map.of(
+                        "accessToken", accessToken,
+                        "refreshToken", refreshToken
+                ));
             }
-            return ResponseEntity.ok(Map.of("message", "Login fail"));
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-    	
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Login failed"));
+        } catch (Exception e) {
+            e.printStackTrace(); // Log lỗi
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
     }
-    
+
+
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refresh(@RequestParam String refreshToken) {
         String username = jwtSer.extractUserName(refreshToken);

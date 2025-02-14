@@ -29,7 +29,7 @@ public class ValidationService {
 	                .orElseThrow(() -> new RuntimeException("User not found"));
 	    }
 	    public User validateUserId(UUID user_id) {
-	        return userRep.findById(user_id).orElseThrow(()->new RuntimeException("User with ID " + user_id + " does not exist"));
+	        return userRep.findById(user_id).orElseThrow();
 	    }
 	    public Room validateRoomId(UUID room_id) {
 	        return roomRep.findById(room_id).orElseThrow(()->new RuntimeException("Room with ID " + room_id + " does not exist"));
