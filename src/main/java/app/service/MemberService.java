@@ -40,7 +40,7 @@ public class MemberService {
            if (memberRep.findByUserAndRoom(user, room) != null) {
                throw new RuntimeException("User is already a member of this room");}
 
-           Member member = new Member(user,room,add_by);
+           Member member = Member.builder().user(user).room(room).addBy(add_by).build();
            member = memberRep.save(member);
            return new ReqMemberDTO(member.getId(),member.getUser(),member.getCreated()) ;  
 	} catch (Exception e) {

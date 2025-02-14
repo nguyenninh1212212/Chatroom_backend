@@ -3,6 +3,7 @@ package app.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,18 @@ public class UserController {
 			
 		
     }
+
+    @GetMapping("/info")
+    ResponseEntity<?> userInfo(@RequestParam(required = true) String username) {
+
+        Optional<UserInfoDTO> user = userSer.findByUsername(username);
+        return ResponseEntity.ok(Map.of(
+                "message", "User registered successfully!",
+                "data", user
+        ));
+
+
+    }
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthDTO req, HttpServletResponse response) {
@@ -67,7 +80,9 @@ public class UserController {
                 tokens.put("refreshToken", refreshToken);
                 Cookie cookie = new Cookie("token", accessToken);
                 cookie.setHttpOnly(false);
+                cookie.setDomain(".example.com");
                 cookie.setPath("/");
+                cookie.setHttpOnly(true);
                 cookie.setSecure(false);
                 cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
                 response.addCookie(cookie);

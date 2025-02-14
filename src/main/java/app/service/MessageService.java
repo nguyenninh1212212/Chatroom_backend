@@ -31,7 +31,7 @@ public class MessageService {
 		User user=userRep.findById(messageSend.getUser_id()).orElseThrow(()-> new RuntimeException("This user is not existing"));
 		Room room=roomRep.findById(room_id).orElseThrow(()-> new RuntimeException("This room is not existing"));
 		
-		Message message=new Message(messageSend.getContent(),user,room);
+		Message message=Message.builder().content(messageSend.getContent()).user(user).room(room).build();
 		message=messageRep.save(message);
 		return new ReqMessageDTO(message.getId(),message.getContent(),message.getUser(),message.getRoom());
 	}

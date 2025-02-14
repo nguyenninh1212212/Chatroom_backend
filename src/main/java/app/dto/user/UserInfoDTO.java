@@ -14,10 +14,10 @@ public class UserInfoDTO {
     // Constructor, Getter & Setter
     public UserInfoDTO(User user) {
         this.id = user.getId();
-        this.fullname = user.getfullname();
+        this.fullname = user.getFullname();
         this.email=user.getEmail();
         this.created=user.getCreated();
-        this.updated=user.getUpdated();
+        this.updated=user.getUpdated().toString();
     }
 
     public UUID getId() {

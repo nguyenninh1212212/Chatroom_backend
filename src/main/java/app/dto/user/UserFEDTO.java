@@ -7,7 +7,7 @@ public class UserFEDTO {
     private String email;
 
     public UserFEDTO(User user){
-        this.fullName=user.getfullname();
+        this.fullName=user.getFullname();
         this.email=user.getEmail();
     }
 

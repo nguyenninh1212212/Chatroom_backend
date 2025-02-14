@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +23,7 @@ import app.dto.user.UserInfoDTO;
 import app.entity.User;
 import app.exception.UserAlreadyExistsException;
 import app.repository.UserReponsitory;
-
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
     @Autowired
@@ -30,7 +32,7 @@ public class UserService implements UserDetailsService {
     private BCryptPasswordEncoder passwordEncoder;
 
 
- 	
+
     public UserInfoDTO Register(UserDTO req) {
         if (userRep.findByUsernameOrEmail(req.getUsername(), req.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Username or Email already exists!");
@@ -45,16 +47,16 @@ public class UserService implements UserDetailsService {
         }
 
         String passwordHash = passwordEncoder.encode(req.getPassword());
-        User user = new User(req.getUsername(), passwordHash, req.getFullname(), req.getEmail());
+        User user =  User.builder().username(req.getUsername()).email(req.getEmail()).password(passwordHash).build();
         user = userRep.save(user);
 
         return new UserInfoDTO(user);
     }
 
 
-    
-    
-    
+
+
+
     public Optional<UserInfoDTO> findByUsername(String username) {
         return userRep.findByUsername(username)
                 .map(user -> new UserInfoDTO(user));
@@ -67,7 +69,7 @@ public class UserService implements UserDetailsService {
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
-                .password(user.getPassword()) 
+                .password(user.getPassword())
                 .build();
     }
 
