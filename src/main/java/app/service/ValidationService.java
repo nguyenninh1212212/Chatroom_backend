@@ -1,5 +1,6 @@
 package app.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import app.util.TokenPayloadUtil;
@@ -28,6 +29,11 @@ public class ValidationService {
 	                .map(User::getId)
 	                .orElseThrow(() -> new RuntimeException("User not found"));
 	    }
+		public Optional<User> validateUsername(String username) {
+			return userRep.findByUsername(username);
+		}
+
+
 	    public User validateUserId(UUID user_id) {
 	        return userRep.findById(user_id).orElseThrow();
 	    }

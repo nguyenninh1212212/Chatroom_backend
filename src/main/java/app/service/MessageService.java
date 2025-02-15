@@ -33,7 +33,7 @@ public class MessageService {
 	private SimpMessagingTemplate messagingTemplate;
 
 	public ReqMessageDTO create(ChatMessageDTO messageSend,UUID room_id){
-		User user=userRep.findById(messageSend.getUser_id()).orElseThrow(()-> new RuntimeException("This user is not existing"));
+		User user=userRep.findByEmail(messageSend.getEmail()).orElseThrow(()-> new RuntimeException("This user is not existing"));
 		Room room=roomRep.findById(room_id).orElseThrow(()-> new RuntimeException("This room is not existing"));
 		
 		Message message=Message.builder().content(messageSend.getContent()).user(user).room(room).created(LocalDateTime.now()).build();

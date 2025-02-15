@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import app.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,9 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private ValidationService validationService;
+
+    @Autowired
     private JWTService jwtSer;
 
     @PostMapping("/register")
@@ -76,7 +80,10 @@ public class UserController {
             );
 
             if (auth.isAuthenticated()) {
-                String accessToken = jwtSer.generateAccessToken(req.getUsername());
+                UUID user_id = validationService.validateUsername(req.getUsername()).get().getId(); ;
+                String email = validationService.validateUsername(req.getUsername()).get().getEmail();
+                String fullname = validationService.validateUsername(req.getUsername()).get().getFullname() ;
+                String accessToken = jwtSer.generateAccessToken(req.getUsername(),user_id,email,fullname);
                 String refreshToken = jwtSer.generateRefreshToken(req.getUsername());
 
                 // Đặt cookie chứa token
@@ -109,8 +116,10 @@ public class UserController {
         if (username == null || jwtSer.isTokenExpired(refreshToken)) {
             return ResponseEntity.status(403).body(Map.of("error", "Invalid Refresh Token"));
         }
-
-        String newAccessToken = jwtSer.generateAccessToken(username);
+        UUID user_id=jwtSer.extractUserId(refreshToken);
+        String email = jwtSer.extractEmail(refreshToken);
+        String fullname = jwtSer.extractFullname(refreshToken);
+        String newAccessToken = jwtSer.generateAccessToken(username,user_id,email,fullname);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", newAccessToken);

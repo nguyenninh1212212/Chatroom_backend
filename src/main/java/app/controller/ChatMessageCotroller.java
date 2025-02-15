@@ -40,12 +40,12 @@ private MessageService messageSer;
 
         try {
             UUID roomUUID = UUID.fromString(room_id);
+            messageService.create(chatMessageDTO, roomUUID);
 
             // 1. Gửi tin nhắn đến phòng cụ thể
             messagingTemplate.convertAndSend("/topic/room/" + room_id, chatMessageDTO);
 
             // 2. Lưu tin nhắn vào database
-            messageService.create(chatMessageDTO, roomUUID);
 
 
         } catch (IllegalArgumentException e) {

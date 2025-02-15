@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -36,8 +33,13 @@ public class JWTService {
     }
     
     // ✅ Generate Access Token
-    public String generateAccessToken(String username) {
-        return generateToken(new HashMap<>(), username, ACCESS_TOKEN_EXPIRATION);
+    public String generateAccessToken(String username, UUID user_id,String email,String fullname) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub2", user_id.toString());
+        claims.put("sub3", email.toString());
+        claims.put("sub4", fullname.toString());
+
+        return generateToken(claims, username, ACCESS_TOKEN_EXPIRATION);
     }
 
     // ✅ Generate Refresh Token
@@ -64,6 +66,20 @@ public class JWTService {
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+    public UUID extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return UUID.fromString(claims.get("user_id", String.class));
+    }
+
+    public String extractEmail(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("email", String.class);
+    }
+
+    public String extractFullname(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("fullname", String.class);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {

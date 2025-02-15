@@ -37,7 +37,7 @@ public class User {
 	private String email;
 
 	@Column(nullable = false, unique = true)
-	private String role = Role.USER.name();
+	private String role ;
 
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime created = LocalDateTime.now();

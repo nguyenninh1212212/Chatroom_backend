@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import app.service.UserService;
+import app.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +28,20 @@ public class MessageController {
 
     @Autowired
     private MessageService messageSer;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ValidationService validationService;
 
     @PostMapping("/chat")
     public ResponseEntity<?> create(@RequestBody(required = true) Map<String, String> req) {
         try {
-            UUID userId = UUID.fromString(req.get("user_id"));
             UUID roomId = UUID.fromString(req.get("room_id"));
+            UUID userId = UUID.fromString(req.get("user_id"));
+            String email = validationService.validateUserId(userId).getEmail();
+            String fullname = validationService.validateUserId(userId).getFullname();
             String content = req.get("content");
-            ChatMessageDTO messageSend=new ChatMessageDTO(userId,roomId,content);
+            ChatMessageDTO messageSend=new ChatMessageDTO(email,roomId,content,fullname);
             ReqMessageDTO message = messageSer.create(messageSend, roomId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Successfully !!🎈", "data", message));
         } catch (IllegalArgumentException e) {

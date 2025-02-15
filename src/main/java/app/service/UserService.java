@@ -5,20 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.Builder;
+import app.enums.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import app.dto.user.AuthDTO;
-import app.dto.user.ReqUserDTO;
 import app.dto.user.UserDTO;
 import app.dto.user.UserInfoDTO;
 import app.entity.User;
@@ -48,7 +44,7 @@ public class UserService implements UserDetailsService {
         }
 
         String passwordHash = passwordEncoder.encode(req.getPassword());
-        User user =  User.builder().username(req.getUsername()).email(req.getEmail()).password(passwordHash).created(LocalDateTime.now()).build();
+        User user =  User.builder().username(req.getUsername()).email(req.getEmail()).password(passwordHash).fullname(req.getFullname()).created(LocalDateTime.now()).role(Role.USER.name()).build();
         user = userRep.save(user);
 
         return new UserInfoDTO(user);
