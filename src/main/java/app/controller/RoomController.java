@@ -1,15 +1,18 @@
 package app.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import app.dto.PagedResponse;
 import app.dto.room.RoomDetailDTO;
 import app.service.MemberService;
 import app.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,32 +43,26 @@ public class RoomController {
 		} catch (RuntimeException e) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "An unexpected error occurred", "error", e.getMessage()));
-}
+        }
 		
 	}
 	
 
 	@GetMapping("")
-	public ResponseEntity<?> rooms(@RequestParam(required = true) UUID user_id) {
+	public ResponseEntity<?> rooms(@RequestParam(required = true) UUID user_id, @RequestParam(required = true) int page , @RequestParam(required = true) int size) {
 	    try {
-	    	List<RoomInfoDTO> roomList = roomSer.Rooms(user_id);
-	    	return ResponseEntity.ok(Map.of("message", "successfully!! 🎈", "data", roomList));
+			PagedResponse<RoomInfoDTO> res = roomSer.Rooms(user_id,page,size);
+	    	return ResponseEntity.ok( Map.of("message", "successfully!! 🎈", "data", res));
 		} catch (ResponseStatusException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Room not found"));
-		}  catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Unexpected error occurred!"));
-	    }
+		}
 	}
 
 	@GetMapping("/detail")
-	public ResponseEntity<?> TheRoom(@RequestParam UUID room_id,@RequestParam UUID user_id) {
+	public ResponseEntity<?> TheRoom(@RequestParam(required = true) UUID room_id,@RequestParam(required = true) UUID user_id,@RequestParam(required = false) int page) {
 		try {
-			RoomDetailDTO roomDetail = roomSer.TheRooms( room_id,user_id)
+			RoomDetailDTO roomDetail = roomSer.TheRooms(room_id,user_id, LocalDateTime.now(),page)
 					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
-
 			return ResponseEntity.ok(Map.of("message", "Successfully!! 🎈", "data", roomDetail));
 		} catch (ResponseStatusException e) {
 			return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", e.getReason()));
@@ -108,21 +105,7 @@ public class RoomController {
 	}
 
 
-	@GetMapping("/search")
-	public ResponseEntity<?> search(@RequestParam(required = false) String keyword) {
-		try {
-			List<RoomInfoDTO> roomList = roomSer.searchRooms(keyword);
-			return ResponseEntity.ok(Map.of("message", "successfully!! 🎈", "data", roomList));
-		} catch (ResponseStatusException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Room not found"));
-		}  catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Unexpected error occurred!"));
-		}
 
-
-
-
-	}
 	
 	
 }

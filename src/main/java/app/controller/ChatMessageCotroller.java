@@ -39,18 +39,25 @@ private MessageService messageSer;
         }
 
         try {
-            UUID roomUUID = UUID.fromString(room_id);
-            messageService.create(chatMessageDTO, roomUUID);
+            // Validate UUID format
+            UUID roomUUID;
+            try {
+                roomUUID = UUID.fromString(room_id);
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid UUID format: " + room_id);
+                throw new IllegalArgumentException("Invalid room ID format", e);
+            }
 
-            // 1. Gửi tin nhắn đến phòng cụ thể
+            // Send message to topic
             messagingTemplate.convertAndSend("/topic/room/" + room_id, chatMessageDTO);
 
-            // 2. Lưu tin nhắn vào database
-
+            // Call message service to save the chat message
+            messageService.create(chatMessageDTO, roomUUID);
 
         } catch (IllegalArgumentException e) {
-            System.err.println("Invalid UUID format: " + room_id);
-            throw new IllegalArgumentException("Invalid room ID format", e);
+            // Additional logging or rethrowing might be necessary depending on the context
+            System.err.println("Error processing room ID or message: " + e.getMessage());
+            throw e;  // Re-throw the exception for proper handling upstream
         }
     }
 

@@ -5,53 +5,24 @@ import java.util.UUID;
 
 import app.dto.user.UserInfoDTO;
 import app.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 
-public class ReqMemberDTO {
+@Getter @Setter
+public class ReqMemberDTO  {
 	 private UUID id;
 
 	    private UserInfoDTO user;
-
-	    
 	    private LocalDateTime created;
 	    private LocalDateTime updated;
 	    private LocalDateTime deleted;
 	    
-	    public ReqMemberDTO() {};
 		public ReqMemberDTO(UUID id,User user, LocalDateTime created) {
+			this.user=new UserInfoDTO(user);
 			this.id=id;
-			this.user = new UserInfoDTO(user);
 			this.created = created;
 		}
-		public UUID getId() {
-			return id;
-		}
-		public void setId(UUID id) {
-			this.id = id;
-		}
-		public UserInfoDTO getUser() {
-			return user;
-		}
-		public void setUser(UserInfoDTO user) {
-			this.user = user;
-		}
-		public LocalDateTime getCreated() {
-			return created;
-		}
-		public void setCreated(LocalDateTime created) {
-			this.created = created;
-		}
-		public LocalDateTime getUpdated() {
-			return updated;
-		}
-		public void setUpdated(LocalDateTime updated) {
-			this.updated = updated;
-		}
-		public LocalDateTime getDeleted() {
-			return deleted;
-		}
-		public void setDeleted(LocalDateTime deleted) {
-			this.deleted = deleted;
-		}
+
 	    
 	    
 }

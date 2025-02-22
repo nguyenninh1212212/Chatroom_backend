@@ -19,7 +19,7 @@ public class JWTService {
 
     private String secretkey = "";
     
-    private static final long ACCESS_TOKEN_EXPIRATION = 1* 60 * 60 * 1000; 
+    private static final long ACCESS_TOKEN_EXPIRATION = 1* 60 * 60 * 1000;
     private static final long REFRESH_TOKEN_EXPIRATION = 24 * 3600 * 1000;
 
     public JWTService() {
@@ -64,9 +64,9 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUserName(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+        public String extractUserName(String token) {
+            return extractClaim(token, Claims::getSubject);
+        }
     public UUID extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         return UUID.fromString(claims.get("user_id", String.class));

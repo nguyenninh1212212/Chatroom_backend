@@ -12,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dto.ErrorResponse.ErrorResponseDTO;
 import app.dto.user.AuthDTO;
-import app.dto.user.ReqUserDTO;
 import app.dto.user.UserDTO;
 import app.dto.user.UserInfoDTO;
-import app.entity.User;
 import app.service.JWTService;
 import app.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -61,9 +57,9 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    ResponseEntity<?> userInfo(@RequestParam(required = true) String username) {
+    ResponseEntity<?> userInfo(@RequestParam(required = false) String username,@RequestParam(required = false) String email) {
 
-        Optional<UserInfoDTO> user = userSer.findByUsername(username);
+        Optional<UserInfoDTO> user = userSer.getUserInfo(username,email);
         return ResponseEntity.ok(Map.of(
                 "message", "User registered successfully!",
                 "data", user
@@ -127,13 +123,5 @@ public class UserController {
         return ResponseEntity.ok(tokens);
     }
     
-//    @GetMapping("/token")
-//    public ResponseEntity<?> getToken(@CookieValue(name = "Token", required = false) String token) {
-//        if (token == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token found");
-//        }
-//        return ResponseEntity.ok(Map.of("Token", token));
-//    }
-//
-    
+
 }

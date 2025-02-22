@@ -14,6 +14,7 @@ import app.entity.User;
 @Repository
 public interface MemberReponsitory extends JpaRepository<Member, UUID> {
 	List<Member> findAllByRoom(Room room);
+
 	Optional<Member> findByUserIdAndRoomId(UUID user_id,UUID room_id);
 	Optional<Member> findByUserId(UUID user_id);
 	Member findByUserAndRoom(User user, Room room);

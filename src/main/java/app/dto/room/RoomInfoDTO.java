@@ -4,7 +4,10 @@ import java.util.UUID;
 
 import app.dto.user.UserInfoDTO;
 import app.entity.Room;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class RoomInfoDTO {
 	private UUID id;
 	private String name;
@@ -17,39 +20,5 @@ public class RoomInfoDTO {
 		this.setOwner(new UserInfoDTO(room.getOwner()));
 		this.latestMessage=latestMessage;
 	}
-	
-	
-	public UUID getId() {
-		return id;
-	}
-	public void setId(UUID id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public UserInfoDTO getOwner() {
-		return owner;
-	}
-	public void setOwner(UserInfoDTO owner) {
-		this.owner = owner;
-	}
 
-
-	public String getLatestMessage() {
-		return latestMessage;
-	}
-
-
-	public void setLatestMessage(String latestMessage) {
-		this.latestMessage = latestMessage;
-	}
-	
-	
-	
-	
-	
 }

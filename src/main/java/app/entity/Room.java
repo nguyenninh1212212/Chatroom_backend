@@ -46,4 +46,5 @@ public class Room {
 
 	@LastModifiedDate
 	private LocalDateTime updated;
+
 }

@@ -54,8 +54,8 @@ public class UserService implements UserDetailsService {
 
 
 
-    public Optional<UserInfoDTO> findByUsername(String username) {
-        return userRep.findByUsername(username)
+    public Optional<UserInfoDTO> getUserInfo(String username,String email) {
+        return userRep.findByUsernameOrEmail(username,email)
                 .map(user -> new UserInfoDTO(user));
     }
 
