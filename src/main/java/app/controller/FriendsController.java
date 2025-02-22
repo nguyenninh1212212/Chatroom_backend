@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.Friends.FriendRespondDTO;
 import app.dto.Friends.FriendsDTO;
 import app.dto.Friends.ReqFriendsDTO;
 import app.dto.user.UserInfoDTO;
@@ -44,9 +45,9 @@ public class FriendsController {
     }
 
     @PostMapping("/invitation/respond")
-    public ResponseEntity<?> getInvitaionRespond(@RequestBody UUID user_id,@RequestBody Boolean appect){
+    public ResponseEntity<?> getInvitaionRespond(@RequestBody FriendRespondDTO req){
         try{
-            String invitation = friendsService.respondToFriendRequest(user_id,appect);
+            String invitation = friendsService.respondToFriendRequest(req.getId(),req.getAppect());
             return ResponseEntity.ok(Map.of("message", invitation));
         }catch (Exception e){
             throw new RuntimeException(e.getMessage()) ;
@@ -55,7 +56,7 @@ public class FriendsController {
     @GetMapping("/invitation/sender")
     public ResponseEntity<?> getInvitaionSender(@RequestParam UUID user_id){
         try{
-            List<ReqFriendsDTO> invitationList =friendsService.getFriendsRequest(user_id).stream().map(friends->ReqFriendsDTO.builder().sender(new UserInfoDTO(friends.getSender())).receiver(new UserInfoDTO(friends.getReceiver())).status(friends.getStatus()).isMe(friends.getSender().getId().equals(user_id)).build()).collect(Collectors.toList());
+            List<ReqFriendsDTO> invitationList =friendsService.getFriendsRequest(user_id).stream().map(friends->ReqFriendsDTO.builder().id(friends.getId()).sender(new UserInfoDTO(friends.getSender())).receiver(new UserInfoDTO(friends.getReceiver())).status(friends.getStatus()).isMe(friends.getSender().getId().equals(user_id)).build()).collect(Collectors.toList());
             return ResponseEntity.ok(Map.of ("message", "Success 🎈🎈","data", invitationList));
         }catch (Exception e){
             throw new RuntimeException(e.getMessage()) ;
@@ -65,7 +66,7 @@ public class FriendsController {
     @GetMapping("/invitation/receiver")
     public ResponseEntity<?> getInvitaionReceived(@RequestParam UUID user_id){
         try{
-            List<ReqFriendsDTO> invitationList =friendsService.getFriendsReceive(user_id).stream().map(friends->ReqFriendsDTO.builder().sender(new UserInfoDTO(friends.getSender())).receiver(new UserInfoDTO(friends.getReceiver())).status(friends.getStatus()).isMe(friends.getSender().getId().equals(user_id)).build()).collect(Collectors.toList());
+            List<ReqFriendsDTO> invitationList =friendsService.getFriendsReceive(user_id).stream().map(friends->ReqFriendsDTO.builder().id(friends.getId()).sender(new UserInfoDTO(friends.getSender())).receiver(new UserInfoDTO(friends.getReceiver())).status(friends.getStatus()).isMe(friends.getSender().getId().equals(user_id)).build()).collect(Collectors.toList());
             return ResponseEntity.ok(Map.of("message", "Success 🎈🎈","data", invitationList));
         }catch (Exception e){
             throw new RuntimeException(e.getMessage()) ;

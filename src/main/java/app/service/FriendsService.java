@@ -83,12 +83,11 @@ public class FriendsService {
                     .build();
             friendsReponsitory.save(newFriend);
             request.setStatus(FriendStatus.ACCEPTED);
+            friendRequestRepository.delete(request);
         } else {
-            request.setStatus(FriendStatus.REJECTED);
+            friendRequestRepository.delete(request);
             return "Friend request rejected!";
         }
-
-        friendRequestRepository.delete(request);
         return "Friend request accepted!";
 
     }
